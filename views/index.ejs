@@ -15,7 +15,16 @@
 	<div class="container-fluid text-center tieude">
 		<h1>NHÓM 05 HÂN HẠNH TÀI TRỢ CHƯƠNG TRÌNH NÀY</h1>
 		<h2>Bật các chân </h2>
-        <div class="form-group"/>
+        
+        <form id="form-value" action="/state" method="POST" style="display: flex;">
+            <label for="on">On
+              <input type="radio" name="state" id="state" value="0">
+            </label>
+            <label for="off">Off
+              <input type="radio" name="state" id="state" value="1">
+            </label>
+            <button class="btn btn-primary" type="submit">Submit</button>
+        </form>
     </div>
 <script src="/js/jquery.min.js"></script>
 <script src="/js/index.js"></script>

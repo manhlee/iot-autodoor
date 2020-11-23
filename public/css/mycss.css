@@ -11,18 +11,6 @@ body {
     background: linear-gradient(45deg, rgba(0, 10, 20, .8), rgba(0,30,25, .7)), url(/images/girl.jpg);
     background-size: cover;
     background-repeat: no-repeat;
-}
-.tieude h1 {
-    font-weight: 600;
-    color: #f9f9f9;
-    padding: 67px 28px;
-}
-.tieude h2 {
-    /* font-size: 30px; */
-    font-size: 50px;
-    color: #dbef70;
-}
-span {
-    color: #6adc3b;
-    font-size: 19px;
+    display: flex;
+    justify-content: space-between;
 }
