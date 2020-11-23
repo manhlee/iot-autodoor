@@ -23,13 +23,13 @@ const char* pass = "23456789";
 const char* host ="192.168.1.27";
 
 int port = 3000;
-char sts='a';
+char * sts="q";
 SocketIoClient webSocket;
 
 
 
 void setup() {
-  USER_SERIAL.begin(9600);
+  USER_SERIAL.begin(112500);
 
   
   
@@ -40,19 +40,19 @@ void setup() {
 
   Wire.begin(D1, D2);
  
-
+ webSocket.on("status-change", handlerOn);
 }
 
 void loop() {
     webSocket.loop();
-    webSocket.on("status-change", handlerOn);
+   
+    
 //    USER_SERIAL.println(sts);
-     Wire.beginTransmission(8); /* begin with device address 8 */
-     Wire.write(sts);
+    Wire.beginTransmission(8); /* begin with device address 8 */
+    Wire.write('j');
+    Wire.endTransmission();
 
-     Wire.endTransmission();
-
-
+delay(200);
 }
 
 void handlerOn(const char * payload, size_t length){
@@ -73,18 +73,23 @@ void handlerOn(const char * payload, size_t length){
         int temp=atoi(value);
           if(temp==1)
           {
-            sts='1';
+            sts="1";
           }else if(temp==0)
           {
-            sts='0';
+            sts="0";
           }else if(temp==2)
           {
-            sts='2';
+            sts="2";
           }
           else {
-            sts='3';
+            sts="3";
           }
+          
       }
+
+      Wire.beginTransmission(8); /* begin with device address 8 */
+    Wire.write(sts);
+    Wire.endTransmission();
         
 
         USER_SERIAL.println(sts);

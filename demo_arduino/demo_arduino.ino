@@ -1,89 +1,136 @@
 #include <Wire.h>
 #include <Stepper.h>
-const int stepsPerRevolution = 700;  // hehe
- char preVal='h';
+#define OPEN 1;
+#define CLOSE 0;
+
+const int stepsPerRevolution = 640;
 Stepper myStepper(stepsPerRevolution, 2,4,3,5);
-int cambien=8;
-int trangthai=0;
-int ngat=1;
+
+char prevVal = 'h';
+int sensorPin = 8;
+int sensorVal = 0;
+int stateDoor = CLOSE;
+bool isEnable = false;
+
 void setup() {
-  // put your setup code here, to run once:
+  Serial.begin(115200);
   myStepper.setSpeed(50);
   pinMode(8,INPUT);
   Wire.begin(8); 
-   Wire.onReceive(receiveDoor);
-   Wire.onRequest(requestDoor);
-  Serial.begin(9600);
+
+  //handler door at 'ban dem' :)
+  Wire.onReceive(receiveEvent);
+  
+//   Wire.onRequest(requestDoor);
 }
 
 void loop() {
+//Handler door at 'ban ngay' :)
+  if(isEnable) handleSensor();
 
-  if(ngat==1)
-  {
-    int cb=digitalRead(cambien);
-    if(cb==0&&trangthai!=1){
-      openDoor();
-      trangthai=1;
-    }
-    if(cb==1&&trangthai!=0)
-    {
-      closeDoor();
-      trangthai=0;
-    }
+  Serial.println(prevVal);
+  if(prevVal == '0') {
+    myStepper.step(-stepsPerRevolution);
+     
   }
-  // put your main code here, to run repeatedly:
+  else if(prevVal == '1') myStepper.step(stepsPerRevolution); 
+
+  prevVal = 'g';
 }
 
+void handleSensor(){
+  sensorVal = digitalRead(sensorPin);
+  if(sensorVal == 0 && stateDoor != 1){
+    openDoor();
+    stateDoor = OPEN;
+  }
+  if(sensorVal == 1 && stateDoor != 0)
+  {
+    closeDoor();
+    stateDoor = CLOSE;
+  }  
+}
 
-void receiveDoor(int howMany) {
- 
+void receiveEvent(int howMany) {
+
   char c;
-   while (0 <Wire.available()) {
-      c = Wire.read();
-      if(preVal!=c){
-        preVal=c;
-      }
-   }
-   Serial.print("_____________");
-   Serial.println(preVal);
-    if(ngat==0)
-    {
-      Serial.println("chay1");
-      if(preVal=='1')// cua dang dong
-     {
-      Serial.println("chay2");
-       openDoor();
-     }
-     if(preVal=='0'){
-       closeDoor();
-     }
-            /* print the character */  
-    }
-    if(preVal=='2')
-    {
-      if(trangthai==1)
-      {
-        // co the dua ra canh bao roi dong cua
-        closeDoor();
-        trangthai=0;
-      }
-      ngat=0;
-      Serial.print("dm");
-    }
-    if(preVal=='3')
-    {
-       ngat=1;
-        Serial.print("dm");
-    }
+  while (0 <Wire.available()) {
+    c = Wire.read();
+//    Serial.println(c);
+  }
+ 
+
+//  openDoor();
+prevVal = c;
+  if(!isEnable && c!='j'){
+//    prevVal = c;
+//    Serial.println("Run here");
+//    if(prevVal != c) prevVal = c;
+//    switch(prevVal){
+//      case '0':
+//        if(stateDoor != 0){
+////           myStepper.step(-100);
+//          Serial.println("Dong cong");  
+//        }
+//        
+//        break;
+//      case '1':
+//        if(stateDoor != 1){
+////           myStepper.step(100);
+//          Serial.println("Mo cong");  
+//        }
+//        break;
+//      default: break;  
+//    }
+  }
+
+//  if(c != 'j'){
+//  
+//    if(prevVal != c) prevVal = c;
+//  
+//    if(!isEnable)
+//    {
+//      Serial.println("run g");
+//      if(prevVal == '1')// cua dang dong
+//      {
+//          openDoor();
+//        stateDoor=OPEN;
+//      }
+//      if(prevVal == '0'){
+//        closeDoor();
+//        stateDoor=CLOSE;
+//      }
+//    }
+  
+//  }
+
+
+  // if(preVal=='2')
+  // {
+  //  if(trangthai==1)
+  //  {
+  //  // co the dua ra canh bao roi dong cua
+  //  closeDoor();
+  //  trangthai=0;
+  //  }
+  //  ngat=0;
+  //  Serial.print("dm");
+  // }
+
+  // if(preVal=='3')
+
 }
+
+
 // function that executes whenever data is requested from master
 void requestDoor() {
 
 }
-void openDoor(){
+
+void openDoor() {
   myStepper.step(stepsPerRevolution);
 }
-void closeDoor()
-{
+
+void closeDoor() {
   myStepper.step(-stepsPerRevolution);
 }
