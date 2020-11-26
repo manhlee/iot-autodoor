@@ -32,6 +32,23 @@ server.listen(3000);
 //     if (err) throw err;
 //     console.log("Connected!");
 //   });
+const sendShut = () => {
+    let date = new Date;
+    let hour = date.getHours();
+    let minute = date.getMinutes();
+    let sencond = date.getSeconds();
+    if(minute === 41 && sencond === 0){
+        if(hour === 95){
+            console.log(date);
+            io.emit("status-change", JSON.parse('{"sts":"'+3+'"}'));
+        }
+        if(hour === 9){
+            io.emit("status-change", JSON.parse('{"sts":"'+4+'"}'));
+        }
+    }
+}
+
+setInterval(sendShut, 1000);
 
 
 io.on('connection', (socket) => {
@@ -56,3 +73,6 @@ app.get('/', (req, res) => {
     res.render('index');
 });
 
+app.get('/disable-server', (req, res) => {
+   
+});
