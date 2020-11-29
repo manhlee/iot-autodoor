@@ -18,12 +18,14 @@
         
         <form id="form-value" action="/state" method="POST" style="display: flex;">
             <label for="on">On
-              <input type="radio" name="state" id="state" value="0">
-            </label>
-            <label for="off">Off
               <input type="radio" name="state" id="state" value="1">
             </label>
-            <button class="btn btn-primary" type="submit">Submit</button>
+            <label for="off">Off
+              <input type="radio" name="state" id="state" value="0">
+            </label>
+            <button class="btn btn-primary"
+              <%= isEnable===3 ? '':'disabled'%>
+            type="submit">Submit</button>
         </form>
     </div>
 <script src="/js/jquery.min.js"></script>

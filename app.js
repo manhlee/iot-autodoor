@@ -19,32 +19,42 @@ app.use(logger('dev'));
 
 server.listen(3000);
 
+let stateDoor;
+let isEnable;
 
-//connect database:
-// var con = mysql.createConnection({
-//     host: "localhost",
-//     user: "root",
-//     password: "",
-//     database: "iot_prof"
-//   });
+// connect database:
+var con = mysql.createConnection({
+    host: "localhost",
+    user: "root",
+    password: "",
+    database: "iot_autodoor"
+  });
   
-//   con.connect(function(err) {
-//     if (err) throw err;
-//     console.log("Connected!");
-//   });
+  con.connect(function(err) {
+    if (err) throw err;
+    console.log("Connected!");
+  });
+
 const sendShut = () => {
     let date = new Date;
     let hour = date.getHours();
     let minute = date.getMinutes();
     let sencond = date.getSeconds();
-    if(minute === 41 && sencond === 0){
-        if(hour === 95){
-            console.log(date);
+    if(minute === 0 && sencond === 0){
+        if(hour === 6){
             io.emit("status-change", JSON.parse('{"sts":"'+3+'"}'));
+            isEnable = 3;
+            
         }
-        if(hour === 9){
+        if(hour === 18){
+            isEnable = 4;
             io.emit("status-change", JSON.parse('{"sts":"'+4+'"}'));
         }
+
+        con.query(`update iot_controll set state = ${isEnable} where id = 2`, function (err, result) {
+            if (err) throw err;
+        });
+        con.commit();
     }
 }
 
@@ -52,7 +62,6 @@ setInterval(sendShut, 1000);
 
 
 io.on('connection', (socket) => {
-    // console.log(`A user connected : ${socket.id}`);
 
     io.to(socket.id).emit("status-change", JSON.parse('{"sts":"'+0+'"}'));
 
@@ -63,16 +72,30 @@ io.on('connection', (socket) => {
 });
 
 app.post('/state', (req, res) => {
-    console.log(req.body);
+    if(0 === parseInt(req.body.state)){
+        stateDoor=0;
+    }
+    else {stateDoor = 1;}
+    
+    con.query(`update iot_controll set state = ${stateDoor} where id = 1`, function (err, result) {
+        if (err) throw err;
+    });
+    con.commit();
+
     io.emit('status-change', JSON.parse('{"state":"'+req.body.state+'"}'));
     res.send();
 });
 
 app.get('/', (req, res) => {
-    console.log(req.params);
-    res.render('index');
+
+    con.query("select * from iot_controll", function (err, result) {
+        if (err) throw err;
+        
+        isEnable = result[1].state;
+        stateDoor = result[0].state;
+
+    });
+
+    res.render('index', {isEnable});
 });
 
-app.get('/disable-server', (req, res) => {
-   
-});
