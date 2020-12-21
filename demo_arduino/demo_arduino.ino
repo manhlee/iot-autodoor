@@ -46,9 +46,11 @@ void loop() {
 		isEnable = true; 
 	}
 	else if(prevVal == '4') {
-		isEnable = false; 
+		isEnable = false;
+		if(stateDoor==OPEN){
 		myStepper.step(stepsPerRevolution);
 		stateDoor = CLOSE;
+		}
 	}
 
 	prevVal = 'g';
