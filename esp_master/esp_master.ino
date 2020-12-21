@@ -38,7 +38,7 @@ void loop() {
 	webSocket.loop();
 
 	Wire.beginTransmission(8); /* begin with device address 8 */
-	Wire.write('j');
+	Wire.write('g');
 	Wire.endTransmission();
 
 	delay(200);
